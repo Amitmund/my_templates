@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resume Forge — V1</title>
+<style>
+:root{--accent:#2563eb;--ink:#172033;--muted:#667085;--line:#dfe4ec;--paper:#fff;--canvas:#eef1f6;--panel:#0f141d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:#090c12;color:#eef2f7}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:330px 1fr 265px}
+.left,.right{background:var(--panel);overflow:auto}.left{border-right:1px solid #252c37;padding:18px}.right{border-left:1px solid #252c37;padding:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:16px}.mark{width:31px;height:31px;border-radius:9px;background:linear-gradient(135deg,#60a5fa,#2563eb);display:grid;place-items:center;color:#06101f;font-weight:1000}.tagline{font-size:10px;color:#8e99a8;margin:4px 0 19px}
+.section{border-top:1px solid #252c37;padding:16px 0}.section:first-of-type{border-top:0;padding-top:5px}.section h3,.right h3{margin:0 0 10px;font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#b9c2ce}
+.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mode{background:#151a23;color:#d9dee6;border:1px solid #29313d;border-radius:8px;padding:9px 6px;font-size:10px}.mode.active{border-color:#4d91ff;box-shadow:0 0 0 1px #4d91ff inset}
+label{display:block;color:#8792a2;font-size:10px;margin:9px 0 5px}input,textarea,select{width:100%;background:#151a23;border:1px solid #29313d;color:#f5f7fa;border-radius:7px;padding:8px;outline:0}textarea{min-height:55px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:#4d91ff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tiny{font-size:9px;color:#7f8b9b;margin-top:5px}.range{width:100%;accent-color:#4d91ff}
+.stage{min-width:0;background:#d9dde5;padding:22px;display:flex;flex-direction:column;align-items:center;overflow:auto}
+.toolbar{width:min(950px,100%);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:#596477;font-size:11px}.actions{display:flex;gap:7px}.btn{border:1px solid #c7ced9;background:#fff;color:#1e293b;border-radius:7px;padding:8px 11px;font-size:11px}.btn.primary{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:800}
+.paper{width:min(850px,100%);min-height:1100px;background:var(--paper);color:var(--ink);box-shadow:0 12px 45px #0002;position:relative;padding:55px 60px;overflow:hidden}
+.paper.compact{padding:42px 48px}.paper.modern:before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--accent)}
+.header{display:grid;grid-template-columns:1fr auto;gap:25px;border-bottom:2px solid var(--ink);padding-bottom:17px}.name{font-size:34px;line-height:1;font-weight:950;letter-spacing:-.045em}.role{font-size:13px;color:var(--accent);font-weight:800;margin-top:7px}.contact{text-align:right;font-size:9px;line-height:1.8;color:#667085}.contact span{display:block}
+.sectionR{margin-top:19px}.sectionTitle{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;border-bottom:1px solid #ccd2dc;padding-bottom:6px;margin-bottom:9px;color:var(--ink)}.summary{font-size:10px;line-height:1.65;color:#3d4859}
+.job{margin-bottom:13px}.jobtop{display:flex;justify-content:space-between;gap:15px}.jobtitle{font-size:11px;font-weight:900}.company{font-size:10px;color:var(--accent);font-weight:750}.date{font-size:9px;color:#788395;white-space:nowrap}.bullets{margin:5px 0 0;padding-left:15px;font-size:9.5px;line-height:1.55;color:#3d4859}.bullets li{margin-bottom:2px}
+.skills{display:flex;flex-wrap:wrap;gap:5px}.skill{font-size:8.5px;border:1px solid #cbd2dc;border-radius:3px;padding:4px 6px;color:#344054}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:35px}.edu{font-size:9.5px;line-height:1.55}.edu b{font-size:10px}.links{font-size:9px;color:#667085;margin-top:3px}
+.right .stat{border-bottom:1px solid #252c37;padding:11px 0}.stat span{display:block;color:#7f8b9b;font-size:9px;margin-bottom:4px}.stat b{font-size:12px}.score{height:8px;background:#202733;border-radius:9px;overflow:hidden;margin-top:8px}.score i{display:block;height:100%;width:82%;background:#22c55e}.good{color:#65d391}.warn{color:#f6c453}.tip{margin-top:15px;padding:11px;border:1px solid #29313d;border-radius:8px;background:#151a23;color:#98a3b2;font-size:10px;line-height:1.55}
+.hide{display:none!important}
+@media(max-width:1150px){.app{grid-template-columns:320px 1fr}.right{display:none}}@media(max-width:760px){.app{display:block}.left{border:0}.stage{padding:10px}.paper{padding:30px 25px;min-height:900px}.header{grid-template-columns:1fr}.contact{text-align:left}.twocol{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="left">
+<div class="brand"><div class="mark">RF</div>Resume Forge</div>
+<div class="tagline">Build one master resume. Shape it for every opportunity.</div>
+
+<div class="section"><h3>Resume strategy</h3>
+<div class="modegrid">
+<button class="mode active" data-mode="ats">ATS First</button>
+<button class="mode" data-mode="tech">Tech / Developer</button>
+<button class="mode" data-mode="creative">Creative</button>
+<button class="mode" data-mode="executive">Executive</button>
+<button class="mode" data-mode="fresher">Fresher</button>
+<button class="mode" data-mode="academic">Academic</button>
+</div>
+</div>
+
+<div class="section"><h3>Identity</h3>
+<label>Full name</label><input id="name" value="Alex Morgan">
+<label>Target role</label><input id="role" value="Python / Django Developer">
+<div class="row"><div><label>Location</label><input id="location" value="Bhubaneswar, India"></div><div><label>Years</label><input id="years" value="4+"></div></div>
+<label>Email</label><input id="email" value="alex@example.com">
+<label>Phone</label><input id="phone" value="+91 98765 43210">
+<label>Links</label><input id="links" value="linkedin.com/in/alex • github.com/alex">
+</div>
+
+<div class="section"><h3>Positioning</h3>
+<label>Professional summary</label><textarea id="summary">Backend-focused developer building reliable Django applications, APIs and automation systems. Strong at turning ambiguous requirements into maintainable products.</textarea>
+<label>Core skills</label><textarea id="skills">Python • Django • REST APIs • PostgreSQL • JavaScript • Git • Docker • AWS</textarea>
+</div>
+
+<div class="section"><h3>Experience</h3>
+<label>Role · Company</label><input id="job1" value="Software Developer · Nova Systems">
+<label>Dates</label><input id="date1" value="2023 — Present">
+<label>Achievement bullets</label><textarea id="bullets1">Built Django APIs used by 12k+ monthly users and reduced average response time by 38%.
+Automated reporting workflows, saving the team 12 hours per week.
+Led migration from legacy scripts to a tested, documented service layer.</textarea>
+<label>Previous role · Company</label><input id="job2" value="Junior Developer · Pixel Works">
+<label>Dates</label><input id="date2" value="2021 — 2023">
+<label>Achievement bullets</label><textarea id="bullets2">Delivered 15+ client features across web applications.
+Improved deployment reliability through Git-based CI workflows.</textarea>
+</div>
+
+<div class="section"><h3>Proof & education</h3>
+<label>Projects / selected work</label><textarea id="projects">Inventory API — Django + PostgreSQL · Designed role-based API and audit logging.
+Automation Hub — Python · Built reusable task automation for internal operations.</textarea>
+<label>Education</label><textarea id="education">B.Tech in Computer Science — Example Institute of Technology · 2020</textarea>
+<label>Certifications</label><input id="certs" value="AWS Cloud Practitioner • Python Certification">
+</div>
+
+<div class="section"><h3>Presentation</h3>
+<label>Accent color</label><input id="accent" type="color" value="#2563eb">
+<label>Density</label><input id="density" class="range" type="range" min="1" max="3" value="2">
+</div>
+</aside>
+
+<main class="stage">
+<div class="toolbar"><span id="format">A4 · Professional resume</span><div class="actions"><button class="btn" id="reset">Reset</button><button class="btn primary" id="export">Export PDF</button></div></div>
+<div class="paper modern" id="paper">
+<header class="header">
+<div><div class="name" id="oName"></div><div class="role" id="oRole"></div></div>
+<div class="contact"><span id="oLocation"></span><span id="oEmail"></span><span id="oPhone"></span><span id="oLinks"></span></div>
+</header>
+
+<section class="sectionR"><div class="sectionTitle">Profile</div><div class="summary" id="oSummary"></div></section>
+
+<section class="sectionR"><div class="sectionTitle">Experience</div>
+<div class="job"><div class="jobtop"><div><div class="jobtitle" id="oJob1"></div></div><div class="date" id="oDate1"></div></div><ul class="bullets" id="oBullets1"></ul></div>
+<div class="job"><div class="jobtop"><div><div class="jobtitle" id="oJob2"></div></div><div class="date" id="oDate2"></div></div><ul class="bullets" id="oBullets2"></ul></div></section>
+
+<section class="sectionR"><div class="sectionTitle">Skills</div><div class="skills" id="oSkills"></div></section>
+
+<div class="twocol">
+<section class="sectionR"><div class="sectionTitle">Selected Work</div><div class="summary" id="oProjects"></div></section>
+<section class="sectionR"><div class="sectionTitle">Education & Credentials</div><div class="edu" id="oEducation"></div><div class="links" id="oCerts"></div></section>
+</div>
+</div>
+</main>
+
+<aside class="right">
+<h3>Resume intelligence</h3>
+<div class="stat"><span>FORMAT</span><b>A4 · 1 page</b></div>
+<div class="stat"><span>READABILITY</span><b class="good">Strong</b><div class="score"><i></i></div></div>
+<div class="stat"><span>IMPACT SIGNALS</span><b id="impact">6 measurable claims</b></div>
+<div class="stat"><span>KEYWORD COVERAGE</span><b id="keyword">Good</b></div>
+<div class="stat"><span>SECTION HEALTH</span><b class="good">Complete</b></div>
+<div class="tip" id="tip">ATS mode: prioritize plain structure, standard headings and measurable outcomes. Avoid decorative elements that can interfere with parsing.</div>
+</aside>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fields=["name","role","location","years","email","phone","links","summary","skills","job1","date1","bullets1","job2","date2","bullets2","projects","education","certs"];
+const tips={
+ats:"ATS mode: prioritize plain structure, standard headings and measurable outcomes. Avoid decorative elements that can interfere with parsing.",
+tech:"Tech mode: make your stack easy to scan, then prove it with projects, architecture, performance or scale.",
+creative:"Creative mode: keep the visual identity distinctive, but let your work and outcomes remain the primary evidence.",
+executive:"Executive mode: compress execution details and emphasize leadership scope, business impact, ownership and scale.",
+fresher:"Fresher mode: projects, internships, coursework and evidence of learning can carry the resume when work history is limited.",
+academic:"Academic mode: make education, research, publications, teaching, conferences and specialist areas prominent."
+};
+function lines(id){return $(id).value.split(/\n/).map(x=>x.trim()).filter(Boolean)}
+function render(){
+ $("oName").textContent=$("name").value;$("oRole").textContent=$("role").value;$("oLocation").textContent=$("location").value;
+ $("oEmail").textContent=$("email").value;$("oPhone").textContent=$("phone").value;$("oLinks").textContent=$("links").value;
+ $("oSummary").textContent=$("summary").value;$("oJob1").textContent=$("job1").value;$("oDate1").textContent=$("date1").value;
+ $("oJob2").textContent=$("job2").value;$("oDate2").textContent=$("date2").value;
+ $("oBullets1").innerHTML=lines("bullets1").map(x=>"<li>"+esc(x)+"</li>").join("");$("oBullets2").innerHTML=lines("bullets2").map(x=>"<li>"+esc(x)+"</li>").join("");
+ $("oSkills").innerHTML=$("skills").value.split(/[•,|]/).map(x=>x.trim()).filter(Boolean).map(x=>"<span class=skill>"+esc(x)+"</span>").join("");
+ $("oProjects").innerHTML=lines("projects").map(x=>"<div style='margin-bottom:6px'>"+esc(x)+"</div>").join("");
+ $("oEducation").textContent=$("education").value;$("oCerts").textContent=$("certs").value;
+ let all=$("bullets1").value+" "+$("bullets2").value+" "+$("summary").value;
+ let nums=(all.match(/\b\d+(?:[.,]\d+)?(?:k|K|%|\+|×)?\b/g)||[]).length;
+ $("impact").textContent=nums+" measurable claims";
+ $("keyword").textContent=$("skills").value.split(/[•,|]/).filter(x=>x.trim()).length>=6?"Strong":"Needs detail";
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+fields.forEach(id=>$(id).addEventListener("input",render));
+$("accent").oninput=e=>document.documentElement.style.setProperty("--accent",e.target.value);
+$("density").oninput=e=>{$("paper").classList.toggle("compact",e.target.value==1);$("paper").style.fontSize=e.target.value==3?".94em":"1em"};
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("tip").textContent=tips[b.dataset.mode];
+ $("format").textContent=b.textContent+" · A4 resume";
+ if(b.dataset.mode==="creative")$("paper").classList.remove("modern");else $("paper").classList.add("modern");
+});
+$("reset").onclick=()=>location.reload();
+
+$("export").onclick=()=>{
+ const old=document.title;document.title=$("name").value+" — Resume";window.print();document.title=old;
+};
+render();
+</script>
+</body>
+</html>
