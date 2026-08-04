@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YT Studio — Cover Designer</title>
+<style>
+:root{--a:#76b900;--rgb:118,185,0;--bg:#07090c;--panel:#0d1117;--panel2:#121820;--line:#242c37;--muted:#8d98a8;--white:#f7f9fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit}.app{height:100vh;display:grid;grid-template-columns:350px 1fr 240px;overflow:hidden}
+.sidebar,.inspector{background:var(--panel);overflow:auto}.sidebar{border-right:1px solid var(--line);padding:22px}.inspector{border-left:1px solid var(--line);padding:20px}
+.brand{display:flex;gap:11px;align-items:center;margin-bottom:4px}.logo{width:30px;height:30px;border-radius:9px;background:var(--a);color:#000;display:grid;place-items:center;font-weight:1000}.brand b{font-size:16px}.sub{color:var(--muted);font-size:11px;margin:0 0 20px}
+.section{border-top:1px solid var(--line);padding:18px 0}.section:first-of-type{border-top:0}.section h3{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#c3ccd7;margin:0 0 11px}
+label{font-size:11px;color:var(--muted);display:block;margin:9px 0 5px}input[type=text],textarea,select{width:100%;background:var(--panel2);color:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 10px;outline:0}textarea{min-height:58px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--a)}
+.themegrid,.layoutgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.theme,.layout{background:var(--panel2);color:#dbe1e8;border:1px solid var(--line);border-radius:8px;padding:9px 7px;font-size:10px;cursor:pointer}.theme.active,.layout.active{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}.swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.upload{border:1px dashed #4a5564;border-radius:10px;padding:15px;text-align:center;color:var(--muted);font-size:11px;cursor:pointer}.upload:hover{border-color:var(--a)}.upload input{display:none}
+.switchrow{display:flex;align-items:center;justify-content:space-between}.switch{width:38px;height:20px;position:relative}.switch input{display:none}.slider{position:absolute;inset:0;background:#37414e;border-radius:30px}.slider:before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}.switch input:checked+.slider{background:var(--a)}.switch input:checked+.slider:before{transform:translateX(18px)}
+.stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:26px;background:radial-gradient(circle at center,rgba(var(--rgb),.09),transparent 45%),#080a0e}
+.toolbar{width:min(1120px,100%);display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.toolbar small{color:var(--muted)}.actions{display:flex;gap:7px}.btn{border:1px solid var(--line);background:#11161d;color:#e8edf3;border-radius:7px;padding:8px 11px;font-size:11px;cursor:pointer}.btn.primary{background:var(--a);color:#050605;border-color:var(--a);font-weight:900}
+.frame{width:min(1120px,100%);aspect-ratio:16/9;position:relative}.cover{position:absolute;inset:0;overflow:hidden;background:#080c11;border:1px solid #303946;box-shadow:0 25px 80px #000b}.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(var(--rgb),.13),transparent 30%,transparent 70%,rgba(var(--rgb),.08));pointer-events:none}
+.mesh{position:absolute;inset:-20%;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:34px 34px;transform:perspective(500px) rotateX(58deg) scale(1.4);transform-origin:bottom}
+.glow{position:absolute;width:45%;height:70%;right:-10%;top:-20%;background:radial-gradient(circle,rgba(var(--rgb),.22),transparent 65%);filter:blur(20px)}
+.net{position:absolute;inset:0;opacity:.55}.net b{position:absolute;width:5px;height:5px;background:var(--a);border-radius:50%;box-shadow:0 0 13px var(--a)}.net i{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--a),transparent);transform-origin:left;opacity:.45}
+.safe{position:absolute;inset:6%;border:1px dashed rgba(255,255,255,.08);z-index:2;pointer-events:none}.covercontent{position:absolute;inset:8%;display:flex;z-index:4}
+.copy{width:58%;display:flex;flex-direction:column;justify-content:center}.photo{width:42%;display:flex;align-items:center;justify-content:center}.photoBox{width:92%;height:88%;background:#111821;border:1px solid #39424e;position:relative;overflow:hidden;clip-path:polygon(8% 0,100% 0,92% 100%,0 100%)}.photoBox img{width:100%;height:100%;object-fit:cover;display:none}.photoBox.has img{display:block}.photoBox.has .placeholder{display:none}.placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#687585;font-size:10px}
+.tag{align-self:flex-start;background:var(--a);color:#050605;padding:5px 8px;font-size:9px;font-weight:1000;letter-spacing:.12em;margin-bottom:12px}.title{font-size:clamp(28px,5vw,70px);line-height:.88;font-weight:1000;letter-spacing:-.055em;text-transform:uppercase;max-width:760px}.title mark{color:var(--a);background:none}.subtitle{font-size:clamp(11px,1.35vw,18px);color:#d7dde5;margin-top:13px;max-width:650px}.desc{font-size:10px;color:#8793a3;margin-top:8px;max-width:570px}.specs{display:flex;flex-wrap:wrap;gap:5px;margin-top:13px}.spec{font-size:8px;color:#cbd3dc;border:1px solid rgba(var(--rgb),.45);padding:5px 7px;background:#0005;text-transform:uppercase;letter-spacing:.08em}
+.meta{position:absolute;z-index:6;top:5%;right:6%;font-size:8px;color:#66717f;letter-spacing:.16em}.corner{position:absolute;z-index:5;bottom:5%;left:6%;font-size:8px;color:#66717f;letter-spacing:.12em}
+.photo-right .copy{order:1;padding-right:4%}.photo-right .photo{order:2}.photo-left .copy{order:2;padding-left:4%}.photo-left .photo{order:1}.photo-top{flex-direction:column}.photo-top .photo{width:100%;height:48%;order:1}.photo-top .copy{width:100%;height:48%;order:2}.photo-top .photoBox{height:100%;width:62%}.photo-center{align-items:center;justify-content:center}.photo-center .photo{width:58%;height:92%}.photo-center .copy{position:absolute;left:6%;bottom:5%;width:88%;z-index:8;text-shadow:0 2px 12px #000}.photo-center .photoBox{width:100%;height:100%;opacity:.8}
+.inspector h3{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#c3ccd7}.stat{padding:11px 0;border-bottom:1px solid var(--line)}.stat span{display:block;color:var(--muted);font-size:9px;margin-bottom:4px}.stat b{font-size:12px}.hint{margin-top:16px;padding:11px;border:1px solid var(--line);border-radius:8px;background:#10151c;color:#8995a4;font-size:10px;line-height:1.5}
+@media(max-width:1100px){.app{grid-template-columns:320px 1fr}.inspector{display:none}}@media(max-width:760px){.app{height:auto;display:block}.sidebar{border-right:0}.stage{min-height:600px;padding:15px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">YT</div><b>YT Studio Cover</b></div>
+  <p class="sub">A cinematic thumbnail system for tech, AI, GPU and gaming creators.</p>
+
+  <div class="section"><h3>1 · Theme</h3>
+    <div class="themegrid">
+      <button class="theme active" data-t="green"><span class="swatch" style="background:#76b900"></span>NVIDIA Green</button>
+      <button class="theme" data-t="blue"><span class="swatch" style="background:#22a7ff"></span>Cyber Blue</button>
+      <button class="theme" data-t="orange"><span class="swatch" style="background:#ff7a00"></span>Alert Orange</button>
+      <button class="theme" data-t="purple"><span class="swatch" style="background:#a855f7"></span>Neon Purple</button>
+      <button class="theme" data-t="red"><span class="swatch" style="background:#ef3340"></span>Crimson Red</button>
+    </div>
+  </div>
+
+  <div class="section"><h3>2 · Composition</h3>
+    <div class="layoutgrid">
+      <button class="layout active" data-l="photo-left">Photo Left</button><button class="layout" data-l="photo-right">Photo Right</button>
+      <button class="layout" data-l="photo-top">Photo Top</button><button class="layout" data-l="photo-center">Photo Center</button>
+    </div>
+  </div>
+
+  <div class="section"><h3>3 · Hero Photo</h3>
+    <label class="upload"><input id="file" type="file" accept="image/*">＋ Upload / replace photo<br><small>JPG · PNG · WEBP</small></label>
+  </div>
+
+  <div class="section"><div class="switchrow"><h3 style="margin:0">Network overlay</h3><label class="switch"><input id="netToggle" type="checkbox" checked><span class="slider"></span></label></div></div>
+
+  <div class="section"><h3>4 · Copy</h3>
+    <label>Tag</label><input id="tag" type="text" value="BREAKING TECH">
+    <label>Title</label><textarea id="title">THE NEXT <mark>AI REVOLUTION</mark></textarea>
+    <label>Subtitle</label><textarea id="subtitle">What happens when AI gets faster, smaller and smarter?</textarea>
+    <label>Description</label><textarea id="desc">Analysis • Benchmarks • Real-world impact</textarea>
+    <label>Tech specs</label><input id="specs" type="text" value="AI • GPU • 4K • 2026">
+  </div>
+</aside>
+
+<main class="stage">
+  <div class="toolbar"><small>16:9 · 1280 × 720 safe composition</small><div class="actions"><button class="btn" id="reset">Reset</button><button class="btn primary" id="export">Export PNG</button></div></div>
+  <div class="frame"><div class="cover" id="cover">
+    <div class="mesh"></div><div class="glow"></div><div class="net" id="network"></div><div class="safe"></div>
+    <div class="meta">TECH // ORIGINAL</div><div class="corner">01 / 04 · FEATURE STORY</div>
+    <div class="covercontent photo-left" id="content">
+      <div class="copy">
+        <div class="tag" id="oTag"></div><div class="title" id="oTitle"></div><div class="subtitle" id="oSubtitle"></div><div class="desc" id="oDesc"></div><div class="specs" id="oSpecs"></div>
+      </div>
+      <div class="photo"><div class="photoBox" id="photoBox"><img id="preview"><div class="placeholder">UPLOAD<br>HERO PHOTO</div></div></div>
+    </div>
+  </div></div>
+</main>
+
+<aside class="inspector">
+  <h3>Design Readout</h3>
+  <div class="stat"><span>FORMAT</span><b>YouTube 16:9</b></div>
+  <div class="stat"><span>LAYOUT</span><b id="readLayout">Photo Left</b></div>
+  <div class="stat"><span>ACCENT</span><b id="readTheme">NVIDIA Green</b></div>
+  <div class="stat"><span>PHOTO</span><b id="readPhoto">Not uploaded</b></div>
+  <div class="stat"><span>NETWORK</span><b id="readNet">Enabled</b></div>
+  <div class="hint">Design tip: keep the headline short, make one word the accent color, and let the hero photo carry the emotional hook.</div>
+</aside>
+</div>
+
+<script>
+const themes={green:["#76b900","118,185,0","NVIDIA Green"],blue:["#22a7ff","34,167,255","Cyber Blue"],orange:["#ff7a00","255,122,0","Alert Orange"],purple:["#a855f7","168,85,247","Neon Purple"],red:["#ef3340","239,51,64","Crimson Red"]};
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+
+function render(){
+  $("oTag").textContent=$("tag").value;
+  $("oTitle").innerHTML=$("title").value;
+  $("oSubtitle").textContent=$("subtitle").value;
+  $("oDesc").textContent=$("desc").value;
+  $("oSpecs").innerHTML=$("specs").value.split(/[•,|]/).map(x=>x.trim()).filter(Boolean).map(x=>`<span class="spec">${esc(x)}</span>`).join("");
+}
+["tag","title","subtitle","desc","specs"].forEach(id=>$(id).addEventListener("input",render));
+
+document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".theme").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+  const [c,r,n]=themes[b.dataset.t];document.documentElement.style.setProperty("--a",c);document.documentElement.style.setProperty("--rgb",r);$("readTheme").textContent=n;
+});
+document.querySelectorAll(".layout").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".layout").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+  $("content").className="covercontent "+b.dataset.l;$("readLayout").textContent=b.textContent;
+});
+$("netToggle").onchange=e=>{$("network").style.display=e.target.checked?"block":"none";$("readNet").textContent=e.target.checked?"Enabled":"Disabled"};
+$("file").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=ev=>{$("preview").src=ev.target.result;$("photoBox").classList.add("has");$("readPhoto").textContent=f.name};r.readAsDataURL(f)};
+
+const defaultState={tag:"BREAKING TECH",title:"THE NEXT <mark>AI REVOLUTION</mark>",subtitle:"What happens when AI gets faster, smaller and smarter?",desc:"Analysis • Benchmarks • Real-world impact",specs:"AI • GPU • 4K • 2026"};
+$("reset").onclick=()=>{Object.entries(defaultState).forEach(([k,v])=>$(k).value=v);render();document.querySelector(".theme").click();document.querySelector(".layout").click()};
+function network(){
+  let pts=[[8,17],[22,9],[38,21],[54,11],[72,20],[91,13],[15,48],[34,39],[52,53],[73,43],[92,57],[7,79],[29,68],[48,84],[68,72],[88,82]];
+  pts.forEach((p,i)=>{let b=document.createElement("b");b.style.left=p[0]+"%";b.style.top=p[1]+"%";$("network").appendChild(b)});
+  for(let i=0;i<pts.length-1;i++){let a=pts[i],b=pts[i+1],dx=b[0]-a[0],dy=b[1]-a[1],line=document.createElement("i");line.style.left=a[0]+"%";line.style.top=a[1]+"%";line.style.width=Math.hypot(dx,dy)+"%";line.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;$("network").appendChild(line)}
+}
+network();render();
+
+$("export").onclick=async()=>{
+  const node=$("cover").cloneNode(true), svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"><foreignObject width="100%" height="100%">${new XMLSerializer().serializeToString(node)}</foreignObject></svg>`;
+  const url=URL.createObjectURL(new Blob([svg],{type:"image/svg+xml;charset=utf-8"})),img=new Image();
+  img.onload=()=>{let c=document.createElement("canvas");c.width=1280;c.height=720;c.getContext("2d").drawImage(img,0,0,1280,720);URL.revokeObjectURL(url);let a=document.createElement("a");a.download="yt-cover.png";a.href=c.toDataURL("image/png");a.click()};
+  img.src=url;
+};
+</script>
+</body>
+</html>
