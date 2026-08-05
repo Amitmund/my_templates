@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creator Canvas Pro — Universal Visual Studio</title>
+<style>
+:root{--accent:#00e5ff;--accent2:#7c3aed;--bg:#07090d;--panel:#10141b;--panel2:#151a22;--line:#29313d;--muted:#8994a5;--paper:#0a0d12}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#f6f8fb;font:13px Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:330px 1fr 310px}
+.sidebar,.inspector{background:var(--panel);overflow:auto;position:relative;z-index:100}.sidebar{border-right:1px solid var(--line);padding:18px}.inspector{border-left:1px solid var(--line);padding:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:16px}.brandmark{width:31px;height:31px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#001014;font-weight:1000}.sub{font-size:10px;color:var(--muted);margin:4px 0 19px}
+.section{border-top:1px solid var(--line);padding:16px 0;margin-top:2px}.section:first-of-type{border-top:0}.section h3,.inspector h3{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#c4ccd6;margin:0 0 10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.choice,.theme,.layout{appearance:none;-webkit-appearance:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:#dce2e9;padding:9px 6px;font-size:10px;display:block;width:100%;position:relative;z-index:20;pointer-events:auto}.choice.active,.theme.active,.layout.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;color:#fff}
+.sidebar button{position:relative!important;inset:auto!important;display:block;width:100%;z-index:200;pointer-events:auto}
+label{display:block;color:var(--muted);font-size:10px;margin:9px 0 5px}input,textarea,select{width:100%;background:var(--panel2);color:#fff;border:1px solid var(--line);border-radius:7px;padding:8px;outline:0}textarea{min-height:54px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+.themegrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.upload{display:block;text-align:center;border:1px dashed #4a5563;border-radius:9px;padding:14px;color:var(--muted);cursor:pointer}.upload input{display:none}
+.switchrow{display:flex;align-items:center;justify-content:space-between;padding:5px 0}.switch{width:38px;height:20px;position:relative}.switch input{display:none}.slider{position:absolute;inset:0;background:#3a4451;border-radius:20px}.slider:before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.switch input:checked+.slider{background:var(--accent)}.switch input:checked+.slider:before{transform:translateX(18px)}
+.stage{min-width:0;background:radial-gradient(circle at 50% 45%,rgba(0,229,255,.08),transparent 42%),#080a0f;padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:auto}
+.toolbar{width:min(1100px,100%);display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}.toolbar small{color:var(--muted)}
+.frame{width:min(1100px,100%);position:relative;transition:aspect-ratio .25s}
+.cover{position:absolute;inset:0;overflow:hidden;background:var(--paper);border:1px solid #343c49;box-shadow:0 25px 80px #000b;user-select:none}
+.cover.treatment-tech:before{background:linear-gradient(120deg,rgba(0,229,255,.10),transparent 30%,rgba(124,58,237,.09))}.cover.treatment-minimal:before{background:linear-gradient(120deg,rgba(255,255,255,.025),transparent 55%)}.cover.treatment-alert:before{background:linear-gradient(120deg,rgba(255,72,72,.12),transparent 45%,rgba(255,132,0,.08))}.cover.treatment-luxury:before{background:linear-gradient(120deg,rgba(245,197,66,.08),transparent 50%,rgba(255,255,255,.035))}.cover.treatment-bold:before{background:linear-gradient(125deg,rgba(236,72,153,.10),transparent 38%,rgba(0,229,255,.10))}.cover:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(0,229,255,.08),transparent 30%,rgba(124,58,237,.07));pointer-events:none}
+.gridbg{position:absolute;inset:-25%;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:34px 34px;transform:perspective(500px) rotateX(58deg) scale(1.4);transform-origin:bottom;pointer-events:none}
+.glow{position:absolute;width:55%;height:85%;right:-18%;top:-28%;background:radial-gradient(circle,rgba(0,229,255,.2),transparent 65%);filter:blur(22px);pointer-events:none}
+.net{position:absolute;z-index:10;inset:0;opacity:.5;pointer-events:auto;cursor:grab}.net b{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}.net i{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform-origin:left;opacity:.45}
+.safe{position:absolute;inset:6%;border:1px dashed rgba(255,255,255,.08);z-index:9;pointer-events:none}.safe.hidden{display:none}
+.canvasMeta{position:absolute;top:5%;right:6%;z-index:10;color:#697585;font-size:8px;letter-spacing:.16em;cursor:grab;pointer-events:auto}.canvasCorner{position:absolute;bottom:5%;left:6%;z-index:10;color:#697585;font-size:8px;letter-spacing:.12em;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab;pointer-events:auto}
+.composition{position:absolute;inset:8%;z-index:30;display:flex;gap:2%;transition:.2s;pointer-events:none}
+.copy{display:flex;flex-direction:column;justify-content:center;pointer-events:none}.visual{display:flex;align-items:center;justify-content:center;position:relative;pointer-events:auto;cursor:grab}
+.copy{width:58%}.visual{width:42%}
+.photoBox{position:relative;width:92%;height:88%;overflow:hidden;background:#111721;border:1px solid #46505e;display:grid;place-items:center;transition:.25s}
+.photoBox img{width:100%;height:100%;display:none}.photoBox.has img{display:block}.placeholder{color:#6c7787;text-align:center;font-size:10px;line-height:1.5}.photoBox.has .placeholder{display:none}
+.fit-cover img{object-fit:cover}.fit-contain img{object-fit:contain}.fit-original img{object-fit:contain;width:auto;height:auto;max-width:100%;max-height:100%}
+.shape-angled{clip-path:polygon(7% 0,100% 0,93% 100%,0 100%)}.shape-rounded{clip-path:none;border-radius:24px}.shape-circle img{border-radius:50%;display:block}.shape-circle{clip-path:none!important;border-radius:50%!important;aspect-ratio:1/1;width:min(88%,88%);height:auto;overflow:hidden}.shape-hex{clip-path:polygon(25% 3%,75% 3%,98% 50%,75% 97%,25% 97%,2% 50%)}.shape-diamond{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}.shape-arch{clip-path:ellipse(68% 58% at 50% 58%)}.shape-cut{clip-path:polygon(0 0,88% 0,100% 12%,100% 100%,12% 100%,0 88%)}.shape-square{clip-path:none}
+.composition.photo-right .copy{order:1;padding-right:4%}.composition.photo-right .visual{order:2}.composition.photo-left .copy{order:2;padding-left:4%}.composition.photo-left .visual{order:1}
+.composition.photo-top{flex-direction:column;gap:3%}.composition.composition.photo-top .visual{width:100%;height:48%;order:1}.composition.composition.photo-top .copy{position:relative;z-index:4;width:100%;height:49%;order:2}.composition.composition.photo-top .photoBox{width:62%;height:100%}.composition.photo-top .photoBox.shape-circle{width:min(62%,100%);height:auto;aspect-ratio:1/1}
+.composition.photo-center{align-items:center;justify-content:center}.composition.composition.photo-center .visual{position:absolute;inset:0;width:100%;height:100%;z-index:1}.composition.composition.photo-center .photoBox{width:100%;height:100%;opacity:.55}.composition.composition.photo-center .copy{position:relative;z-index:3;width:88%;height:100%;text-shadow:0 2px 16px #000;justify-content:flex-end;padding-bottom:5%}
+
+/* Draggable Copy Elements inside Copy Container */
+.tag, .headline, .specialWord, .subhead, .metric, .micro, .chips {
+  pointer-events: auto;
+  cursor: grab;
+  display: inline-block;
+}
+
+.tag{align-self:flex-start;background:var(--accent);color:#030604;padding:5px 8px;font-size:9px;font-weight:1000;letter-spacing:.12em;margin-bottom:11px}.headline{font-size:clamp(28px,5vw,70px);line-height:.88;font-weight:1000;letter-spacing:-.055em;text-transform:uppercase}.headline strong{color:var(--accent)}.subhead{font-size:clamp(11px,1.25vw,18px);line-height:1.25;color:#d7dde5;margin-top:12px;max-width:680px}.micro{font-size:9px;color:#8994a4;margin-top:8px;max-width:620px}.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}.chip{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#ccd4de;border:1px solid rgba(0,229,255,.4);padding:5px 7px;background:#0005}.badge{position:absolute;top:0;right:0;background:#fff;color:#050609;padding:7px 9px;font-size:9px;font-weight:1000;transform:rotate(3deg);z-index:8;pointer-events:auto;cursor:grab}.metric{font-size:24px;font-weight:1000;color:var(--accent);margin-top:12px}.metric small{font-size:8px;color:#8994a4;letter-spacing:.1em;margin-left:5px}
+.bottomBrand{position:absolute;right:5%;bottom:4%;top:auto;z-index:12;color:#aab3c0;font-size:8px;letter-spacing:.12em;text-align:right;max-width:34%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab;pointer-events:auto}.bottomBrand b{color:#dfe5ec}
+.stat{border-bottom:1px solid var(--line);padding:11px 0}.stat span{display:block;color:var(--muted);font-size:9px;margin-bottom:4px}.stat b{font-size:12px}.tip{margin-top:15px;padding:11px;border:1px solid var(--line);border-radius:8px;background:#151a22;color:#98a3b2;font-size:10px;line-height:1.55}
+@media(max-width:1120px){.app{grid-template-columns:315px 1fr}.inspector{display:none}}@media(max-width:720px){.app{display:block}.sidebar{border:0}.stage{min-height:620px;padding:12px}.frame{width:100%}}
+
+.cover.treatment-minimal .gridbg{opacity:.025}.cover.treatment-minimal .glow{opacity:.25}.cover.treatment-minimal .net{opacity:.08}
+.cover.treatment-minimal .tag{background:#fff;color:#07090d}.cover.treatment-minimal .headline{letter-spacing:-.045em}
+.cover.treatment-tech .gridbg{opacity:.20}.cover.treatment-tech .net{opacity:.55}.cover.treatment-tech .glow{opacity:1}
+.cover.treatment-alert .gridbg{opacity:.05}.cover.treatment-alert .net{opacity:.12}.cover.treatment-alert .badge{background:var(--accent);color:#08090b;transform:rotate(-2deg) scale(1.08)}
+.cover.treatment-alert .headline{letter-spacing:-.065em}.cover.treatment-alert .tag{background:var(--accent)}
+.cover.treatment-luxury .gridbg{opacity:.02}.cover.treatment-luxury .net{opacity:.04}.cover.treatment-luxury .glow{opacity:.5}
+.cover.treatment-luxury .headline{font-weight:850;letter-spacing:-.035em}.cover.treatment-luxury .tag{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.cover.treatment-bold .gridbg{opacity:.08}.cover.treatment-bold .net{opacity:.28}.cover.treatment-bold .headline{font-size:clamp(34px,6vw,84px);letter-spacing:-.075em}.cover.treatment-bold .tag{transform:skew(-8deg)}
+
+.proof{display:inline-flex;align-items:center;width:max-content;max-width:90%;padding:5px 8px;border:1px solid rgba(255,255,255,.16);border-radius:5px;color:#b9c2cf;background:rgba(5,8,12,.58);font-size:8px;letter-spacing:.08em;text-transform:uppercase;line-height:1.25}
+.proofLabel{font-size:7px;letter-spacing:.12em;color:var(--accent);font-weight:800}
+.accentWord{color:var(--accent)}
+.gradientText{background:linear-gradient(90deg,var(--accent),var(--gradient-accent,#00e5ff));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+
+.backgroundLayer{position:absolute;inset:0;z-index:1;overflow:hidden;background:#07090d;pointer-events:auto;cursor:grab}
+.backgroundLayer img{width:100%;height:100%;display:block;object-fit:cover;filter:saturate(.82) contrast(1.04)}
+.backgroundLayer.has-image:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,7,11,.18),rgba(4,7,11,.68))}
+
+/* Upper Text Layer Formatting & Dynamic Accent Gradient */
+.upperTextLayer{
+  position:absolute;
+  z-index:15;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+  pointer-events:auto;
+  cursor:grab;
+  width:max-content;
+  height:max-content;
+  max-width:90%;
+  top:50%;
+  left:50%;
+  margin-top:-40px;
+  margin-left:-200px;
+}
+.upperTextLayer:empty{display:none}
+.upperTextLayer span{
+  font-size:clamp(38px,8vw,120px);
+  font-weight:var(--upper-weight,900);
+  line-height:.82;
+  letter-spacing:-.075em;
+  text-transform:uppercase;
+  color:var(--upper-color,#ffffff);
+  white-space:nowrap;
+  text-align:center;
+  word-break:normal;
+  transition:color .15s, font-weight .15s;
+}
+.upperTextLayer span.has-stroke{
+  -webkit-text-stroke: 1.5px rgba(255,255,255,0.4);
+}
+.upperTextLayer.use-gradient span{
+  color:transparent !important;
+  background:var(--accent-grad, linear-gradient(135deg,#00e5ff,#7c3aed));
+  -webkit-background-clip:text;
+  background-clip:text;
+}
+
+.composition .visual{position:relative;z-index:35}
+.composition .copy{position:relative;z-index:40}
+.composition .photoBox{position:relative;z-index:36}
+
+.composition.photo-top{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:minmax(0,34%) minmax(0,1fr)!important;
+  gap:2%!important;
+  align-items:center!important;
+}
+.composition.photo-top .visual{
+  width:100%!important;height:100%!important;min-height:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  order:1!important;
+}
+.composition.photo-top .copy{
+  width:100%!important;height:100%!important;min-height:0!important;
+  order:2!important;justify-content:flex-start!important;
+  overflow:hidden!important;padding-top:0!important;
+}
+.composition.photo-top .photoBox{
+  max-height:100%!important;height:100%!important;width:58%!important;
+}
+.composition.photo-top .photoBox.shape-circle{
+  width:min(30%,100%)!important;height:auto!important;aspect-ratio:1/1!important;
+  max-height:100%!important;
+}
+
+.composition.photo-bottom{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  grid-template-rows:minmax(0,44%) minmax(0,52%)!important;
+  gap:2%!important;
+  align-items:center!important;
+}
+.composition.photo-bottom .copy{
+  grid-row:1!important;order:1!important;
+  width:100%!important;height:100%!important;
+  justify-content:flex-start!important;overflow:hidden!important;
+  padding-top:0!important;
+}
+.composition.photo-bottom .visual{
+  grid-row:2!important;order:2!important;
+  width:100%!important;height:100%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+}
+.composition.photo-bottom .photoBox{
+  width:58%!important;height:100%!important;max-height:100%!important;
+}
+.composition.photo-bottom .photoBox.shape-circle{
+  width:min(30%,100%)!important;height:auto!important;aspect-ratio:1/1!important;
+}
+
+.specialWord{font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif;font-size:clamp(18px,3vw,42px);font-weight:900;line-height:.9;letter-spacing:-.035em;color:var(--accent);margin:4px 0 5px;display:none;text-transform:none}
+.specialWord.hasText{display:block}
+.photoBox{--hero-border-alpha:.18;--hero-fill-alpha:.12;background:rgba(17,23,33,var(--hero-fill-alpha));border-color:rgba(255,255,255,var(--hero-border-alpha))}
+
+:root{--accent-grad:linear-gradient(135deg,#00e5ff,#7c3aed);--accent-solid:#00e5ff;--gradient-angle:135deg}
+.accentWord{
+  background:var(--accent-grad);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  font-weight:inherit;
+}
+.specialWord{
+  font-size:clamp(18px,3.2vw,46px);
+  font-weight:700;
+  line-height:.9;
+  letter-spacing:-.02em;
+  color:var(--special-base,#f5f5f5);
+  -webkit-text-fill-color:var(--special-base,#f5f5f5);
+  margin:5px 0 6px;
+  display:none;
+  text-transform:none;
+}
+.specialWord.hasText{display:block}
+
+.layer-active {
+  outline: 2px dashed var(--accent) !important;
+  outline-offset: 3px;
+}
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border: 1px solid #000;
+  border-radius: 50%;
+  z-index: 9999;
+  display: none;
+}
+.layer-active .resize-handle {
+  display: block;
+}
+.resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+.resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+.resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+.resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+
+.layer-row {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+.layer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.layer-title {
+  font-weight: 700;
+  font-size: 9px;
+  color: #fff;
+}
+.drag-handle-btn {
+  background: var(--line);
+  border: none;
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 8px;
+  cursor: grab;
+}
+.layer-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 4px;
+}
+.layer-controls label {
+  margin: 0;
+  font-size: 7px;
+}
+.layer-controls input {
+  padding: 3px;
+  font-size: 9px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand"><div class="brandmark">CC</div>Creator Canvas Pro</div>
+<div class="sub">Universal visual cover studio — built for different content jobs, not one template.</div>
+
+<div id="layerGuide" style="margin:0 0 12px;padding:9px;border:1px solid var(--line);border-radius:8px;background:#0c1016;color:#7f8a99;font-size:8px;line-height:1.5">
+<b style="color:#b9c2cf">Multi-layer composition</b><br>
+Select, drag, spin, opacity & scale control per layer in the Inspector panel.
+</div>
+<div class="section"><h3>01 · Design intent</h3>
+<div class="grid2" id="usecases">
+<button class="choice active" data-use="youtube">YouTube</button><button class="choice" data-use="podcast">Podcast</button>
+<button class="choice" data-use="course">Course</button><button class="choice" data-use="news">News / Alert</button>
+<button class="choice" data-use="product">Product</button><button class="choice" data-use="event">Event</button>
+</div></div>
+
+<div id="backgroundUploadSection" class="section">
+  <h3>03 · Background layer</h3>
+  <label>Background Image</label>
+  <input type="file" id="bgUpload" accept="image/*"><div id="backgroundStatus" style="font-size:8px;color:#697585;margin-top:5px">No background image selected</div>
+</div>
+
+<div class="section"><h3>02 · Canvas</h3>
+<label>Aspect ratio</label>
+<select id="ratio">
+<option value="16/9">16:9 · YouTube / Landscape</option><option value="4/3">4:3 · Classic</option><option value="3/2">3:2 · Photo</option><option value="1/1">1:1 · Square</option><option value="4/5">4:5 · Feed</option><option value="9/16">9:16 · Shorts / Story</option><option value="2/3">2:3 · Portrait</option>
+</select>
+<div id="featureStatus" style="font-size:9px;color:var(--accent);margin:6px 0 10px">Selected: YouTube</div><div id="intentHint" style="font-size:9px;color:#8994a5;line-height:1.45;margin-bottom:10px">Hero-first storytelling · strong headline · thumbnail readability.</div>
+<label>Custom accent gradient</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<input type="color" id="gradColor1" value="#00e5ff">
+<input type="color" id="gradColor2" value="#7c3aed">
+</div>
+<div style="display:grid;grid-template-columns:1fr;gap:6px;margin-top:6px">
+<select id="gradDirection">
+<option value="90deg">90° · Left → Right</option>
+<option value="120deg">120° · Diagonal</option>
+<option value="135deg" selected>135° · Rising Diagonal</option>
+<option value="180deg">180° · Right → Left</option>
+<option value="225deg">225° · Falling Diagonal</option>
+<option value="270deg">270° · Bottom → Top</option>
+</select>
+</div>
+
+<label>Visual treatment</label>
+<select id="style">
+<option value="tech">Tech Editorial</option>
+<option value="minimal">Minimal Studio</option>
+<option value="alert">Breaking Alert</option>
+<option value="luxury">Luxury Product</option>
+<option value="bold">Bold Creator</option>
+</select>
+<div id="styleHint" style="font-size:9px;color:#8994a5;line-height:1.45;margin-top:7px">Structured tech grid · network energy · futuristic glow.</div>
+</div>
+
+<div class="section"><h3>03 · Color system</h3>
+<div class="themegrid">
+<button class="theme active" data-color="#00e5ff"><span class="swatch" style="background:#00e5ff"></span>Cyber Cyan</button>
+<button class="theme" data-color="#76b900"><span class="swatch" style="background:#76b900"></span>NVIDIA Green</button>
+<button class="theme" data-color="#22a7ff"><span class="swatch" style="background:#22a7ff"></span>Cyber Blue</button>
+<button class="theme" data-color="#ff7a00"><span class="swatch" style="background:#ff7a00"></span>Alert Orange</button>
+<button class="theme" data-color="#a855f7"><span class="swatch" style="background:#a855f7"></span>Neon Purple</button>
+<button class="theme" data-color="#ef3340"><span class="swatch" style="background:#ef3340"></span>Crimson Red</button>
+<button class="theme" data-color="#f5c542"><span class="swatch" style="background:#f5c542"></span>Electric Gold</button>
+<button class="theme" data-color="#a3e635"><span class="swatch" style="background:#a3e635"></span>Cyber Lime</button>
+<button class="theme" data-color="#f472b6"><span class="swatch" style="background:#f472b6"></span>Hot Pink</button>
+<button class="theme" data-color="#f8fafc"><span class="swatch" style="background:#f8fafc"></span>Mono White</button>
+</div>
+<label>Custom accent</label>
+<div style="display:flex;gap:7px"><input id="color" type="color" value="#00e5ff" style="width:48px;height:35px;padding:3px"><input id="colorText" value="#00e5ff" maxlength="7"></div>
+<label>Secondary accent</label><input id="color2" type="color" value="#7c3aed">
+<label>Brand / channel</label><input id="brand" value="NOVA LABS">
+</div>
+
+<div class="section"><h3>04 · Composition</h3>
+<div class="grid2" id="layouts">
+<button class="layout active" data-layout="photo-left">Photo Left</button><button class="layout" data-layout="photo-right">Photo Right</button>
+<button class="layout" data-layout="photo-top">Photo Top</button><button class="layout" data-layout="photo-bottom">Hero Bottom</button><button class="layout" data-layout="photo-center">Photo Center</button>
+</div>
+<label>Image shape</label>
+<div class="grid2" id="shapes">
+<button class="choice active" data-shape="angled">Angled</button><button class="choice" data-shape="rounded">Rounded</button>
+<button class="choice" data-shape="circle">Circle</button><button class="choice" data-shape="hex">Hexagon</button>
+<button class="choice" data-shape="diamond">Diamond</button><button class="choice" data-shape="arch">Arch</button>
+<button class="choice" data-shape="cut">Cut Corner</button><button class="choice" data-shape="square">Square</button>
+</div>
+<label>Image fit</label>
+<select id="fit"><option value="contain">Show full image · no crop</option><option value="cover">Fill shape · crop if needed</option><option value="original">Original proportion · no crop</option></select>
+</div>
+
+<div class="section"><h3>05 · Hero visual</h3>
+<label class="upload"><input id="photo" type="file" accept="image/*">＋ Add / replace hero image<br><small>Local image — nothing is uploaded</small></label>
+
+<div class="rangeRow"><div><span>Hero border opacity</span><b id="heroBorderValue">18%</b></div>
+<input id="heroBorderOpacity" type="range" min="0" max="100" value="18"></div>
+<div class="rangeRow"><div><span>Hero box blend</span><b id="heroFillValue">12%</b></div>
+<input id="heroFillOpacity" type="range" min="0" max="100" value="12"></div>
+
+<div class="switchrow"><span style="font-size:10px;color:var(--muted)">Network graphic</span><label class="switch"><input id="network" type="checkbox" checked><span class="slider"></span></label></div>
+<div class="switchrow"><span style="font-size:10px;color:var(--muted)">Safe-area guide</span><label class="switch"><input id="safe" type="checkbox"><span class="slider"></span></label></div>
+</div>
+
+<div class="section"><h3>06 · Message</h3>
+<label>Eyebrow / category</label><input id="eyebrow" value="FIELD REPORT · 2026">
+<label>Headline</label><textarea id="headline">THE INTERNET IS CHANGING</textarea>
+<label>Accent Words — comma separated</label>
+<input id="accentWords" value="CHANGING, INTERNET, AI" placeholder="Example: CHANGING, INTERNET, AI">
+
+<label>Supporting line</label><textarea id="subhead">The shift nobody is prepared for.</textarea>
+
+<label>Upper Text (Background Layer 02)</label>
+<input id="upperText" value="FUTURE" placeholder="Example: FUTURE">
+
+<!-- Upper Text Formatting & Gradient Options -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+  <div>
+    <label>Upper Text Color</label>
+    <input type="color" id="upperTextColor" value="#ffffff">
+  </div>
+  <div>
+    <label>Upper Text Weight</label>
+    <select id="upperTextWeight">
+      <option value="900" selected>Black (900)</option>
+      <option value="800">Extra Bold (800)</option>
+      <option value="700">Bold (700)</option>
+      <option value="500">Medium (500)</option>
+    </select>
+  </div>
+</div>
+<div class="switchrow" style="margin-top:6px">
+  <span style="font-size:10px;color:var(--muted)">Apply Accent Gradient</span>
+  <label class="switch"><input id="upperTextGradient" type="checkbox"><span class="slider"></span></label>
+</div>
+<div class="switchrow" style="margin-top:4px">
+  <span style="font-size:10px;color:var(--muted)">Upper Text Letter Outline</span>
+  <label class="switch"><input id="upperTextStroke" type="checkbox" checked><span class="slider"></span></label>
+</div>
+
+<label>Special Word / Phrase</label>
+<input id="specialWord" value="with Community" placeholder="Example: with Community">
+<label>Special Word Font</label>
+<select id="specialFont">
+<option value="'Brush Script MT','Segoe Script','URW Chancery L',cursive">Handwritten Script</option>
+<option value="'Comic Sans MS','Segoe Print',cursive">Casual Handwritten</option>
+<option value="'Bradley Hand','Segoe Print',cursive">Marker Hand</option>
+<option value="'Pacifico','Brush Script MT',cursive">Signature Script</option>
+<option value="'Bebas Neue','Arial Narrow',sans-serif">Poster Condensed</option>
+<option value="'Georgia','Times New Roman',serif">Editorial Serif</option>
+<option value="'Courier New',monospace">Tech Mono</option>
+<option value="'Trebuchet MS',Arial,sans-serif">Rounded Sans</option>
+</select>
+<label>Special Word Color</label>
+<div style="display:flex;gap:7px;align-items:center">
+<input type="color" id="specialColor" value="#f5f5f5">
+</div>
+</div>
+
+<div class="section"><h3>07 · Optional modules</h3>
+<label>Badge</label><input id="badge" value="NEW">
+<label>Metric / proof point</label><input id="metric" value="3.2× FASTER">
+<label>Small description</label><textarea id="micro">Research • Test results • Practical takeaways</textarea>
+<label>Tags / specs</label><input id="chips" value="AI • BUSINESS • FUTURE">
+<label>Top-right meta</label><input id="meta" value="TECH // ORIGINAL">
+<label>Corner label</label><input id="corner" value="01 / 04 · FEATURE STORY">
+<div id="controlStatus" style="margin-top:14px;padding:9px;border:1px solid var(--line);border-radius:8px;background:#0c1016;color:#8f9aaa;font-size:9px;line-height:1.4">Controls ready · click any option to update the canvas.</div>
+</div>
+</aside>
+
+<main class="stage">
+<div class="toolbar"><small id="format">16:9 · YouTube / Landscape</small><small>Screenshot-ready preview · no export required</small></div>
+<div class="frame" id="frame" style="aspect-ratio:16/9"><div class="cover treatment-tech" id="cover">
+<div class="backgroundLayer" id="backgroundLayer"><img id="backgroundImage" alt=""></div>
+<div class="upperTextLayer" id="upperTextLayer"></div>
+<div class="gridbg"></div><div class="glow"></div><div class="net" id="net"></div><div class="safe" id="safeGuide"></div>
+<div class="canvasMeta" id="oMeta"></div><div class="canvasCorner" id="oCorner"></div>
+<div class="composition photo-left" id="layout">
+<div class="copy" id="oCopy">
+<div class="tag" id="oEyebrow"></div><div class="headline" id="oHeadline"></div><div class="specialWord" id="oSpecialWord"></div><div class="subhead" id="oSub"></div><div class="metric" id="oMetric"></div><div class="micro" id="oMicro"></div><div class="chips" id="oChips"></div>
+</div>
+<div class="visual" id="oVisual"><div class="badge" id="oBadge"></div><div class="photoBox shape-angled fit-contain" id="photoBox"><img id="preview"><div class="placeholder">YOUR<br>HERO VISUAL</div></div></div>
+</div>
+<div class="bottomBrand" id="oBrandContainer"><b id="oBrand"></b><span id="oUse"></span></div>
+</div></div>
+</main>
+
+<aside class="inspector">
+<h3>Layers & Position</h3>
+<div style="font-size:9px;color:var(--muted);margin-bottom:12px">
+Drag any layer directly on the canvas or use the fallback handle. Adjust Z-index, opacity, scale, and angular turning (0-360°).
+</div>
+<div id="layersList"></div>
+
+<h3 style="margin-top:20px">Live design readout</h3>
+<div class="stat"><span>DESIGN INTENT</span><b id="rUse">YouTube</b></div>
+<div class="stat"><span>CANVAS</span><b id="rRatio">16:9</b></div>
+<div class="stat"><span>COMPOSITION</span><b id="rLayout">Photo Left</b></div>
+<div class="stat"><span>IMAGE</span><b id="rImage">No image</b></div>
+<div class="stat"><span>SHAPE</span><b id="rShape">Angled</b></div>
+<div class="stat"><span>FIT</span><b id="rFit">Full image / no crop</b></div>
+<div class="stat"><span>STYLE</span><b id="rStyle">Tech Editorial</b></div>
+<div class="tip" id="tip">Hero-first storytelling · strong headline · thumbnail readability.</div>
+</aside>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const layoutNames={"photo-bottom":"Hero Bottom","photo-top":"Photo Top","photo-left":"Photo Left","photo-right":"Photo Right","photo-center":"Photo Center"};
+const useNames={youtube:"YouTube",podcast:"Podcast",course:"Course",news:"News / Alert",product:"Product",event:"Event"};
+const intents={
+youtube:{hint:"Hero-first storytelling · strong headline · thumbnail readability.",layout:"photo-left",shape:"angled",style:"tech"},
+podcast:{hint:"Personality-first · guest/photo prominence · episode promise.",layout:"photo-right",shape:"circle",style:"bold"},
+course:{hint:"Outcome-first · learning promise · credibility and proof.",layout:"photo-left",shape:"rounded",style:"minimal"},
+news:{hint:"Urgency-first · event + consequence · strong alert treatment.",layout:"photo-center",shape:"cut",style:"alert"},
+product:{hint:"Product-first · clean visual hierarchy · benefit + proof.",layout:"photo-right",shape:"square",style:"luxury"},
+event:{hint:"Information-first · what + where + when · clean hierarchy.",layout:"photo-top",shape:"rounded",style:"minimal"}
+};
+const ratioNames={"16/9":"16:9","4/3":"4:3","3/2":"3:2","1/1":"1:1","4/5":"4:5","9/16":"9:16","2/3":"2:3"};
+const fitNames={contain:"Full image / no crop",cover:"Fill shape / crop allowed",original:"Original proportion / no crop"};
+
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function render(){
+ let raw=$("headline").value;
+ let h=esc(raw);
+ const accentInput=$("accentWords");
+ const terms=(accentInput?accentInput.value:"").split(",")
+   .map(x=>x.trim()).filter(Boolean).sort((a,b)=>b.length-a.length);
+
+ if(terms.length){
+   const re=new RegExp("("+terms.map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")+")","gi");
+   h=h.replace(re,'<span class="accentWord">$1</span>');
+ }
+ $("oEyebrow").textContent=$("eyebrow").value;
+ $("oHeadline").innerHTML=h;
+ $("oSub").textContent=$("subhead").value;
+ $("oMetric").innerHTML=$("metric").value?esc($("metric").value)+" <small>PROOF POINT</small>":"";
+ $("oMicro").textContent=$("micro").value;
+ $("oBadge").textContent=$("badge").value;
+ $("oBrand").textContent=$("brand").value;
+ $("oMeta").textContent=$("meta").value;
+ $("oCorner").textContent=$("corner").value;
+ $("oChips").innerHTML=$("chips").value.split(/[•,|]/).map(x=>x.trim()).filter(Boolean).map(x=>"<span class=chip>"+esc(x)+"</span>").join("");
+ $("rImage").textContent=$("photo").files[0]?$("photo").files[0].name:"No image";
+}
+["eyebrow","headline","accentWords","subhead","badge","metric","micro","chips","meta","corner","brand"].forEach(id=>$(id)?.addEventListener("input",render));
+
+document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".theme").forEach(x=>x.classList.remove("active"));b.classList.add("active");setColor(b.dataset.color);
+});
+function setColor(c){if(!/^#[0-9a-f]{6}$/i.test(c))return;document.documentElement.style.setProperty("--accent",c);$("color").value=c;$("colorText").value=c}
+$("color").oninput=e=>setColor(e.target.value);$("colorText").oninput=e=>setColor(e.target.value);
+$("color2").oninput=e=>document.documentElement.style.setProperty("--accent2",e.target.value);
+
+document.querySelectorAll(".layout").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".layout").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ $("layout").className="composition "+b.dataset.layout;$("rLayout").textContent=b.textContent;$("controlStatus").textContent="Composition selected · "+b.textContent;
+});
+document.querySelectorAll("#shapes .choice").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("#shapes .choice").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ const box=$("photoBox");const has=box.classList.contains("has");const fit=box.className.match(/fit-\w+/)?.[0]||"fit-contain";
+ box.className="photoBox shape-"+b.dataset.shape+" "+fit+(has?" has":"");$("rShape").textContent=b.textContent;$("controlStatus").textContent="Image shape selected · "+b.textContent;
+});
+$("fit").onchange=e=>{
+ const box=$("photoBox");const shape=box.className.match(/shape-\w+/)?.[0]||"shape-angled";const has=box.classList.contains("has");
+ box.className="photoBox "+shape+" fit-"+e.target.value+(has?" has":"");$("rFit").textContent=fitNames[e.target.value];$("controlStatus").textContent="Image fit selected · "+fitNames[e.target.value];
+};
+$("ratio").onchange=e=>{$("frame").style.aspectRatio=e.target.value;$("format").textContent=e.target.options[e.target.selectedIndex].text;$("rRatio").textContent=ratioNames[e.target.value];$("controlStatus").textContent="Canvas ratio selected · "+ratioNames[e.target.value]};
+const styleHints={
+tech:"Structured tech grid · network energy · futuristic glow.",
+minimal:"Quiet composition · reduced graphics · more breathing room.",
+alert:"Urgency · stronger contrast · alert emphasis · restrained background noise.",
+luxury:"Premium restraint · elegant typography · minimal decoration.",
+bold:"High-energy typography · stronger scale · punchier visual presence."
+};
+$("style").onchange=e=>{
+ const v=e.target.value;
+ $("rStyle").textContent=e.target.options[e.target.selectedIndex].text;
+ $("styleHint").textContent=styleHints[v];
+ $("cover").className="cover treatment-"+v;
+};
+
+$("network").onchange=e=>$("net").style.display=e.target.checked?"block":"none";
+$("safe").onchange=e=>$("safeGuide").classList.toggle("hidden",!e.target.checked);
+
+$("photo").onchange=e=>{
+ const f=e.target.files[0];if(!f)return;
+ const r=new FileReader();r.onload=ev=>{$("preview").src=ev.target.result;$("photoBox").classList.add("has");render()};r.readAsDataURL(f);
+};
+
+function network(){
+ const n=$("net");n.innerHTML="";
+ const pts=[[10,18],[23,38],[37,22],[49,46],[63,28],[76,52],[90,22],[82,76],[57,78],[31,70]];
+ pts.forEach(([x,y])=>{let p=document.createElement("b");p.style.left=x+"%";p.style.top=y+"%";n.appendChild(p)});
+ [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[5,7],[7,8],[8,9],[9,1],[3,8],[4,8],[6,7]].forEach(([a,b])=>{
+   const p1=pts[a],p2=pts[b],dx=p2[0]-p1[0],dy=p2[1]-p1[1],len=Math.sqrt(dx*dx+dy*dy);
+   let l=document.createElement("i");l.style.left=p1[0]+"%";l.style.top=p1[1]+"%";l.style.width=len+"%";l.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";n.appendChild(l);
+ });
+}
+document.querySelectorAll("#usecases .choice").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("#usecases .choice").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ const name=useNames[b.dataset.use], intent=intents[b.dataset.use];
+ $("rUse").textContent=name;
+ $("oUse").textContent="ORIGINAL";
+ $("tip").textContent=intent.hint;
+ $("featureStatus").textContent="Selected: "+name;
+ $("intentHint").textContent=intent.hint;
+
+ document.querySelectorAll("#layouts .layout").forEach(x=>x.classList.toggle("active",x.dataset.layout===intent.layout));
+ $("layout").className="composition "+intent.layout;
+ const shapeButton=[...document.querySelectorAll("#shapes .choice")].find(x=>x.dataset.shape===intent.shape);
+ if(shapeButton){
+   document.querySelectorAll("#shapes .choice").forEach(x=>x.classList.remove("active"));
+   shapeButton.classList.add("active");
+   const box=$("photoBox"),has=box.classList.contains("has"),fit=box.className.match(/fit-\w+/)?.[0]||"fit-contain";
+   box.className="photoBox shape-"+intent.shape+" "+fit+(has?" has":"");
+   $("rShape").textContent=shapeButton.textContent;
+ }
+ $("rLayout").textContent=[...document.querySelectorAll("#layouts .layout")].find(x=>x.dataset.layout===intent.layout)?.textContent||"";
+ if(intent.style){
+   $("style").value=intent.style;
+   $("rStyle").textContent=$("style").options[$("style").selectedIndex].text;
+   $("styleHint").textContent=styleHints[intent.style];
+   $("cover").className="cover treatment-"+intent.style;
+ }
+
+});
+network();render();
+
+(function(){
+function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}
+function updateAccent(){
+ const title=$("headline"), out=$("oHeadline"); if(!title||!out)return;
+ const words=($("accentWords")?.value||"").split(",").map(s=>s.trim()).filter(Boolean);
+ const gradient=$("gradientText")?.checked;
+ let text=title.value;
+ words.forEach(w=>{text=text.replace(new RegExp("("+esc(w)+")","gi"),'<span class="'+(gradient?"gradientText":"accentWord")+'">$1</span>')});
+ out.innerHTML=text;
+ $("cover").style.setProperty("--gradient-accent",$("gradientColor")?.value||$("color2")?.value||"#00e5ff");
+}
+["accentWords","gradientText","gradientColor","color2"].forEach(id=>$(id)?.addEventListener("input",updateAccent));
+$("gradientText")?.addEventListener("change",updateAccent);
+updateAccent();
+})();
+
+(function(){
+  const bgInput=$("bgUpload"), bgImg=$("backgroundImage"), bgLayer=$("backgroundLayer");
+  const upperInput=$("upperText"), upperLayer=$("upperTextLayer");
+
+  bgInput?.addEventListener("change", function(){
+    const f=this.files?.[0]; if(!f)return;
+    const url=URL.createObjectURL(f);
+    bgImg.src=url;
+    bgLayer.classList.add("has-image");
+  });
+
+  function updateUpperText(){
+    if(!upperInput || !upperLayer) return;
+    const value=upperInput.value.trim();
+    if(value){
+      const span = document.createElement("span");
+      span.innerHTML = value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      if($("upperTextStroke")?.checked) span.classList.add("has-stroke");
+      upperLayer.innerHTML = "";
+      upperLayer.appendChild(span);
+    } else {
+      upperLayer.innerHTML = "";
+    }
+    upperLayer.classList.toggle("use-gradient", !!$("upperTextGradient")?.checked);
+  }
+
+  upperInput?.addEventListener("input", updateUpperText);
+  $("upperTextGradient")?.addEventListener("change", updateUpperText);
+  $("upperTextStroke")?.addEventListener("change", updateUpperText);
+
+  const utColor = $("upperTextColor");
+  const utWeight = $("upperTextWeight");
+
+  function applyUpperTextStyles(){
+    if(!upperLayer) return;
+    if(utColor) upperLayer.style.setProperty("--upper-color", utColor.value);
+    if(utWeight) upperLayer.style.setProperty("--upper-weight", utWeight.value);
+    updateUpperText();
+  }
+
+  [utColor, utWeight].forEach(el => el?.addEventListener("input", applyUpperTextStyles));
+  [utColor, utWeight].forEach(el => el?.addEventListener("change", applyUpperTextStyles));
+
+  applyUpperTextStyles();
+})();
+
+(function(){
+  const special=$("specialWord"), font=$("specialFont"), out=$("oSpecialWord");
+  function updateSpecial(){
+    if(!special||!out)return;
+    out.textContent=special.value.trim();
+    out.classList.toggle("hasText",!!special.value.trim());
+    if(font)out.style.fontFamily=font.value; if($("specialColor")){out.style.color=$("specialColor").value;out.style.webkitTextFillColor=$("specialColor").value;}
+  }
+  special?.addEventListener("input",updateSpecial);
+  font?.addEventListener("change",updateSpecial);
+  updateSpecial();
+
+  const border=$("heroBorderOpacity"), fill=$("heroFillOpacity"), box=$("photoBox");
+  const borderVal=$("heroBorderValue"), fillVal=$("heroFillValue");
+  function updateBlend(){
+    if(!box)return;
+    const b=(+(border?.value||18))/100, f=(+(fill?.value||12))/100;
+    box.style.setProperty("--hero-border-alpha",b);
+    box.style.setProperty("--hero-fill-alpha",f);
+    if(borderVal)borderVal.textContent=Math.round(b*100)+"%";
+    if(fillVal)fillVal.textContent=Math.round(f*100)+"%";
+  }
+  border?.addEventListener("input",updateBlend);
+  fill?.addEventListener("input",updateBlend);
+  updateBlend();
+})();
+
+(function(){
+  function setGradient(a,b,angle){
+    const cover=$("cover"); if(!cover)return;
+    cover.style.setProperty("--accent-grad",`linear-gradient(${angle},${a},${b})`);
+    cover.style.setProperty("--accent-solid",a);
+    cover.style.setProperty("--gradient-angle",angle);
+  }
+
+  function applyCustom(){
+    setGradient(
+      $("gradColor1")?.value||"#00e5ff",
+      $("gradColor2")?.value||"#7c3aed",
+      $("gradDirection")?.value||"135deg"
+    );
+  }
+
+  $("gradColor1")?.addEventListener("input",applyCustom);
+  $("gradColor2")?.addEventListener("input",applyCustom);
+  $("gradDirection")?.addEventListener("change",applyCustom);
+
+  const sc=$("specialColor");
+  const sw=$("oSpecialWord");
+  function updateSpecialColor(){
+    if(sw && sc){
+      sw.style.setProperty("--special-base",sc.value);
+      sw.style.color=sc.value;
+      sw.style.webkitTextFillColor=sc.value;
+    }
+  }
+  sc?.addEventListener("input",updateSpecialColor);
+
+  applyCustom();
+  updateSpecialColor();
+})();
+
+/* ==========================================================================
+   LAYERS & POSITION SYSTEM WITH SEPARATE COPY CONTEXT LAYERS & ANGULAR TURNING
+   ========================================================================== */
+(function(){
+  const layersConfig = [
+    { id: 'backgroundLayer', label: '01. Background Image', zIndex: 1, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'upperTextLayer', label: '02. Upper Text', zIndex: 15, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oVisual', label: '03. Hero Visual', zIndex: 35, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oEyebrow', label: '04. Tag / Eyebrow', zIndex: 41, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oHeadline', label: '05. Headline', zIndex: 42, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oSpecialWord', label: '06. Special Phrase', zIndex: 43, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oSub', label: '07. Subhead', zIndex: 44, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oMetric', label: '08. Metric', zIndex: 45, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oMicro', label: '09. Micro Description', zIndex: 46, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oChips', label: '10. Chips / Tags', zIndex: 47, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oBadge', label: '11. Badge', zIndex: 50, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oBrandContainer', label: '12. Bottom Brand', zIndex: 12, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oMeta', label: '13. Top Meta', zIndex: 10, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'oCorner', label: '14. Corner Text', zIndex: 10, opacity: 1, x: 0, y: 0, scale: 1, angle: 0 },
+    { id: 'net', label: '15. Network Graphic', zIndex: 10, opacity: 0.5, x: 0, y: 0, scale: 1, angle: 0 }
+  ];
+
+  const listContainer = $("layersList");
+  let activeLayerId = null;
+
+  function applyLayerStyles(layer) {
+    const el = $(layer.id);
+    if (!el) return;
+    el.style.zIndex = layer.zIndex;
+    el.style.opacity = layer.opacity;
+    el.style.transform = `translate(${layer.x}px, ${layer.y}px) rotate(${layer.angle}deg) scale(${layer.scale})`;
+  }
+
+  function setActiveLayer(layerId) {
+    activeLayerId = layerId;
+    layersConfig.forEach(l => {
+      const el = $(l.id);
+      if (el) {
+        if (l.id === activeLayerId) el.classList.add('layer-active');
+        else el.classList.remove('layer-active');
+      }
+    });
+  }
+
+  function attachResizeHandles(el, layer) {
+    if (el.querySelector('.resize-handle')) return;
+    const positions = ['se', 'nw', 'ne', 'sw'];
+    positions.forEach(pos => {
+      const handle = document.createElement('div');
+      handle.className = `resize-handle ${pos}`;
+      el.appendChild(handle);
+
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startScale = layer.scale;
+
+        const onMouseMove = (moveEvent) => {
+          const dx = moveEvent.clientX - startX;
+          const dy = moveEvent.clientY - startY;
+          let delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+          if (pos === 'nw' || pos === 'sw') delta = -delta;
+
+          let newScale = startScale + (delta / 200);
+          newScale = Math.max(0.1, Math.min(5, newScale));
+
+          layer.scale = newScale;
+          applyLayerStyles(layer);
+
+          const scaleInput = $(`sc_${layer.id}`);
+          if (scaleInput) scaleInput.value = Math.round(newScale * 100);
+        };
+
+        const onMouseUp = () => {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+    });
+  }
+
+  function buildLayersPanel() {
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+
+    layersConfig.forEach((layer) => {
+      const el = $(layer.id);
+      if (el) {
+        applyLayerStyles(layer);
+        attachResizeHandles(el, layer);
+      }
+
+      const row = document.createElement('div');
+      row.className = 'layer-row';
+
+      row.innerHTML = `
+        <div class="layer-header">
+          <span class="layer-title">${layer.label}</span>
+          <button class="drag-handle-btn" id="dragHandle_${layer.id}" title="Fallback Drag Handle">⣿ Drag</button>
+        </div>
+        <div class="layer-controls">
+          <div>
+            <label>Z-Index</label>
+            <input type="number" value="${layer.zIndex}" id="z_${layer.id}">
+          </div>
+          <div>
+            <label>Opacity</label>
+            <input type="range" min="0" max="1" step="0.05" value="${layer.opacity}" id="op_${layer.id}">
+          </div>
+          <div>
+            <label>Scale (%)</label>
+            <input type="number" value="${Math.round(layer.scale * 100)}" id="sc_${layer.id}">
+          </div>
+          <div>
+            <label>Angle (°)</label>
+            <input type="number" min="0" max="360" value="${layer.angle}" id="ang_${layer.id}">
+          </div>
+        </div>
+      `;
+
+      listContainer.appendChild(row);
+
+      $(`z_${layer.id}`).addEventListener('input', (e) => {
+        layer.zIndex = parseInt(e.target.value) || 0;
+        applyLayerStyles(layer);
+      });
+
+      $(`op_${layer.id}`).addEventListener('input', (e) => {
+        layer.opacity = parseFloat(e.target.value) || 0;
+        applyLayerStyles(layer);
+      });
+
+      $(`sc_${layer.id}`).addEventListener('input', (e) => {
+        layer.scale = (parseFloat(e.target.value) || 100) / 100;
+        applyLayerStyles(layer);
+      });
+
+      $(`ang_${layer.id}`).addEventListener('input', (e) => {
+        layer.angle = parseInt(e.target.value) || 0;
+        applyLayerStyles(layer);
+      });
+
+      const handle = $(`dragHandle_${layer.id}`);
+      bindDragEvents(handle, layer);
+    });
+  }
+
+  function bindDragEvents(triggerEl, layer) {
+    if (!triggerEl) return;
+
+    let startX = 0, startY = 0, initialX = 0, initialY = 0;
+
+    const onMouseDown = (e) => {
+      if (e.target.classList.contains('resize-handle')) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      setActiveLayer(layer.id);
+
+      startX = e.clientX;
+      startY = e.clientY;
+      initialX = layer.x;
+      initialY = layer.y;
+
+      const onMouseMove = (moveEvent) => {
+        const dx = moveEvent.clientX - startX;
+        const dy = moveEvent.clientY - startY;
+        layer.x = initialX + dx;
+        layer.y = initialY + dy;
+        applyLayerStyles(layer);
+      };
+
+      const onMouseUp = () => {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+      };
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    };
+
+    triggerEl.addEventListener('mousedown', onMouseDown);
+  }
+
+  function initDirectCanvasDragging() {
+    layersConfig.forEach((layer) => {
+      const el = $(layer.id);
+      if (el) {
+        bindDragEvents(el, layer);
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      if (!e.target.closest('.cover') && !e.target.closest('.inspector')) {
+        setActiveLayer(null);
+      }
+    });
+  }
+
+  buildLayersPanel();
+  initDirectCanvasDragging();
+})();
+</script>
+</body>
+</html>
