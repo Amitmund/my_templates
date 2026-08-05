@@ -1,2 +1,1 @@
-# my_templates
-a single file responsive templates for different usecase.
+Refer to youtube_canvas_final_GOD Folder.
